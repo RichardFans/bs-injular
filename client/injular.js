@@ -314,7 +314,7 @@
 
     function watcherInterceptor() {
       var deregister = $watch.apply(this, arguments);
-      addedWatchers.push(scope.$$watchers[0]);
+      if (scope.$$watchers && scope.$$watchers.length > 0) addedWatchers.push(scope.$$watchers[0]); // fan
       deregister();
       return deregister;
     }
@@ -327,7 +327,7 @@
       }
       namedListeners.push(listener);
       deregister();
-      scope.$$listeners[name].pop();
+      if (scope.$$listeners[name]) scope.$$listeners[name].pop(); // fan
       return deregister;
     }
   }
@@ -388,7 +388,7 @@
     var ngModelDestroyListener = 'modelCtrl.$$parentForm.$removeControl(modelCtrl);';
     var ngOptionsDestroyListener = 'self.renderUnknownOption = noop;';
     var formDestroyListener = 'formCtrl.$removeControl(modelCtrl);';
-    var listenerString = listener.toString();
+    var listenerString = listener ? listener.toString() : ''; // fan
     return listenerString.indexOf(ngModelDestroyListener) >= 0 ||
            listenerString.indexOf(ngOptionsDestroyListener) >= 0 ||
            listenerString.indexOf(formDestroyListener) >= 0;
